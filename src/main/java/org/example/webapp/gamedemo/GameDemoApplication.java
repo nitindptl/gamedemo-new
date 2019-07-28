@@ -90,7 +90,7 @@ public class GameDemoApplication implements ErrorController {
 			updateFirstLastNode(state,point);
 			//update player if he played second move
 			//String up = state.get(Constants.PLAYER).equals(Constants.PLAYER_1) ? Constants.PLAYER_2 : Constants.PLAYER_1;
-			state.put(Constants.PLAYER, Constants.PLAYER_1);
+			//state.put(Constants.PLAYER, Constants.PLAYER_1);
 		} else {
 			state.put(Constants.PLAYER, Constants.PLAYER_2);
 			state.put(Constants.IS_FIRST_MOVE, true);
@@ -119,9 +119,8 @@ public class GameDemoApplication implements ErrorController {
 			clickCount = (Integer) state.get(Constants.STATE_CLICK_COUNT) - 1;
 			state.put(Constants.STATE_CLICK_COUNT, clickCount);
 			state.remove(Constants.STATE_START);
+			state.put(Constants.PLAYER, state.get(Constants.PLAYER).equals(Constants.PLAYER_1) ? Constants.PLAYER_1 : Constants.PLAYER_2);
 			msg = "Invalid move! Try again.";
-			//String up = state.get(Constants.PLAYER).equals(Constants.PLAYER_1) ? Constants.PLAYER_2 : Constants.PLAYER_1;
-			//state.put(Constants.PLAYER, up);
 			return getResponse(Constants.INVALID_END_NODE, state.get(Constants.PLAYER).toString(), null, null, msg);
 		}
 		
@@ -131,6 +130,7 @@ public class GameDemoApplication implements ErrorController {
 				findNotVisitedNode();
 				Point start = (Point) state.get(Constants.STATE_START);
 				// end = (Point) state.get(Constants.STATE_END);
+				state.put(Constants.PLAYER, state.get(Constants.PLAYER).equals(Constants.PLAYER_1) ? Constants.PLAYER_1 : Constants.PLAYER_2);
 				msg = "Player wins.";
 				return getResponse(Constants.GAME_OVER, state.get(Constants.PLAYER).toString(), start, point, msg);
 		}
@@ -141,6 +141,11 @@ public class GameDemoApplication implements ErrorController {
 			findNotVisitedNode();
 			Point start = (Point) state.get(Constants.STATE_START);
 			// end = (Point) state.get(Constants.STATE_END);
+			if((Integer)state.get(Constants.STATE_CLICK_COUNT) % 2 == 0) {
+				state.put(Constants.PLAYER, state.get(Constants.PLAYER).equals(Constants.PLAYER_1) ? Constants.PLAYER_2 : Constants.PLAYER_1);
+			} else {
+				state.put(Constants.PLAYER, state.get(Constants.PLAYER).equals(Constants.PLAYER_1) ? Constants.PLAYER_1 : Constants.PLAYER_2);
+			}
 			msg = "Select a second node to complete the line.";
 			return getResponse(Constants.VALID_START_NODE, state.get(Constants.PLAYER).toString(), start, point, msg);
 		}
@@ -151,6 +156,7 @@ public class GameDemoApplication implements ErrorController {
 			Point start = (Point) state.get(Constants.STATE_START);
 			Point end = (Point) state.get(Constants.STATE_END);
 			msg = "Select a second node to complete the line.";
+			state.put(Constants.PLAYER, state.get(Constants.PLAYER).equals(Constants.PLAYER_1) ? Constants.PLAYER_2 : Constants.PLAYER_1);
 			return getResponse(Constants.VALID_START_NODE, state.get(Constants.PLAYER_2).toString(), start, end, msg);
 		}
 
