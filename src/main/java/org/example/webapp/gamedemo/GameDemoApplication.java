@@ -35,6 +35,11 @@ public class GameDemoApplication implements ErrorController {
 		pointsAlreadyMet = new HashMap<>();
 	}
 
+	/**
+	 * This is rest endpoint to initialize the game with some settings.
+	 *
+	 * @return
+	 */
 	@RequestMapping("/initialize")
 	public String initialize() {
 		// state = new HashMap<>();
@@ -51,11 +56,20 @@ public class GameDemoApplication implements ErrorController {
 				+ "\"heading\": \"Player 1\",\n" + "\"message\": \"Awaiting Player 1's Move\"\n" + "} }";
 	}
 
+	/**
+	 * Resetting the game settings
+	 */
 	private void resetMap() {
 		state.clear();
 		pointsAlreadyMet.clear();
 	}
 
+	/**
+	 * Node clicked endpoint
+	 *
+	 * @param point : cordinates clicked by the user with x and y
+	 * @return returns the response body
+	 */
 	@PostMapping("/node-clicked")
 	Response nodeClicked(@RequestBody Point point) {
 
@@ -88,9 +102,6 @@ public class GameDemoApplication implements ErrorController {
 			state.put(Constants.IS_FIRST_MOVE, false);
 			state.put(Constants.STATE_END, point);
 			updateFirstLastNode(state,point);
-			//update player if he played second move
-			//String up = state.get(Constants.PLAYER).equals(Constants.PLAYER_1) ? Constants.PLAYER_2 : Constants.PLAYER_1;
-			//state.put(Constants.PLAYER, Constants.PLAYER_1);
 		} else {
 			state.put(Constants.PLAYER, Constants.PLAYER_2);
 			state.put(Constants.IS_FIRST_MOVE, true);
@@ -103,18 +114,14 @@ public class GameDemoApplication implements ErrorController {
 					state.put(Constants.STATE_CLICK_COUNT, clickCount);
 					// invalid move!!
 					msg = "Not a valid starting position.";
-					//String up = state.get(Constants.PLAYER).equals(Constants.PLAYER_1) ? Constants.PLAYER_1 : Constants.PLAYER_2;
-					//state.put(Constants.PLAYER, up);
 					return getResponse(Constants.INVALID_START_NODE, state.get(Constants.PLAYER).toString(), null, null, msg);
 				}
 			state.put(Constants.STATE_START, point);
 			}
-			
-			
 
 		// if user selected the start point but it's not an adjuscent then throw error
 		// if user selected node is not adjuscent then should be INVALID_NODE
-		List<Point> adjuscentPoint = (List<Point>) adjuscentPoints.get((Point) state.get(Constants.STATE_START));
+		List<Point> adjuscentPoint = adjuscentPoints.get(state.get(Constants.STATE_START));
 		if (!adjuscentPoint.contains(point)) {
 			clickCount = (Integer) state.get(Constants.STATE_CLICK_COUNT) - 1;
 			state.put(Constants.STATE_CLICK_COUNT, clickCount);
@@ -129,7 +136,6 @@ public class GameDemoApplication implements ErrorController {
 				pointsAlreadyMet.put((Point) state.get(Constants.STATE_START), point);
 				findNotVisitedNode();
 				Point start = (Point) state.get(Constants.STATE_START);
-				// end = (Point) state.get(Constants.STATE_END);
 				state.put(Constants.PLAYER, state.get(Constants.PLAYER).equals(Constants.PLAYER_1) ? Constants.PLAYER_1 : Constants.PLAYER_2);
 				msg = "Player wins.";
 				return getResponse(Constants.GAME_OVER, state.get(Constants.PLAYER).toString(), start, point, msg);
@@ -160,16 +166,13 @@ public class GameDemoApplication implements ErrorController {
 			return getResponse(Constants.VALID_START_NODE, state.get(Constants.PLAYER_2).toString(), start, end, msg);
 		}
 
-		
-		// user selected already from the start or end node
-		// then we need to update start and end in the current state.
 		return null;
 
 	}
 
 	@RequestMapping("/error")
 	String gameError() {
-		return "{\n" + "    \"error\": \"Invalid type for `id`: Expected INT but got a STRING\"\n" + "}";
+		return "{\n" + " \"error\": \"Invalid type for `id`: Expected INT but got a STRING\"\n" + "}";
 	}
 
 	private Response getResponse(String msg, String heading, Point start, Point end, String bodyMsg) {
@@ -188,9 +191,12 @@ public class GameDemoApplication implements ErrorController {
 		body.setMessage(bodyMsg);
 		resp.setBody(body);
 		return resp;
-
 	}
 
+	/**
+	 * Spring boot application starting point
+	 * @param args : arguments to the spring boot application
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(GameDemoApplication.class, args);
 	}
@@ -200,6 +206,11 @@ public class GameDemoApplication implements ErrorController {
 		return "/error";
 	}
 
+	/**
+	 * This method helps to update the first and last node based on the user clicked.
+	 * @param state : state map
+	 * @param point : points or co-ordinates clicked by player
+	 */
 	private void updateFirstLastNode(Map<String, Object> state,Point point) {
 		Point first = (Point) state.get(Constants.STATE_NODE_FIRST);
 		Point last = (Point) state.get(Constants.STATE_NODE_LAST);
@@ -217,14 +228,22 @@ public class GameDemoApplication implements ErrorController {
 				state.put(Constants.STATE_NODE_LAST, point);
 			}
 		}
-		
 	}
-	
+
+	/**
+	 * This method helps to put start and end point for the not visited node
+	 */
 	private void findNotVisitedNode() {
 		adjuscentPoints.put((Point) state.get(Constants.STATE_NODE_FIRST),findNotVisitedNode((Point) state.get(Constants.STATE_NODE_FIRST)));
 		adjuscentPoints.put((Point) state.get(Constants.STATE_NODE_FIRST),findNotVisitedNode((Point) state.get(Constants.STATE_NODE_LAST)));
 	}
-	
+
+	/**
+	 * This method helps to find the node which is not visited
+	 *
+	 * @param node : Node to be checked from the not visited list
+	 * @return : returns the list of not visited nodes.
+	 */
 	private List<Point> findNotVisitedNode(Point node) {
 		List<Point> adjuscentPoint = (List<Point>) adjuscentPoints.get(node);
 		List<Point> availableNodes =  new ArrayList<Point>();
@@ -238,7 +257,11 @@ public class GameDemoApplication implements ErrorController {
 		}
 		return availableNodes;
 	}
-	
+
+	/**
+	 * This method checks the node is available of not
+	 * @return : returns the true if node is not visited else false.
+	 */
 	private boolean isNodeAvailable() {
 		return findNotVisitedNode((Point) state.get(Constants.STATE_END)).isEmpty()?true:false;
 	}
