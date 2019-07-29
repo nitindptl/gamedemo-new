@@ -11,11 +11,11 @@ Below are the list of API :
 
 <p> This end point identifies which node is clicked based on the co-ordinates passed to it and keeps the track of all visited and non visited nodes and edges.<br>
 
-    There are five acceptable values for msg in the response, representing the four possible states for a clicked node <br>
-    (VALID_START_NODE, INVALID_START_NODE, VALID_END_NODE, INVALID_END_NODE) <br>
-    and the game over state (GAME_OVER). A VALID_END_NODE must contain a LINE in the newLine field. If a VALID_END_NODE also constitutes the last move in the game,<br>
-    the Server should send GAME_OVER in the msg field instead. All other states should contain NULL in the newLine field. The heading and message fields can be used to<br>
-    provide feedback to the user; Their value must be STRING | NULL, but the content is left unspecified.<br></p>
+    There are five acceptable values for msg in the response, representing the four possible states for a clicked node
+    (VALID_START_NODE, INVALID_START_NODE, VALID_END_NODE, INVALID_END_NODE) and the game over state (GAME_OVER).
+    A VALID_END_NODE must contain a LINE in the newLine field. If a VALID_END_NODE also constitutes the last move in the game,
+    the Server should send GAME_OVER in the msg field instead. All other states should contain NULL in the newLine field.
+</p>
 
 ## /error :
 
