@@ -11,17 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class GetAdjuscentNodeService {
 
-    // This is being used to store index of matrix
-    private static int MATRIX[][]  = {{11, 12, 13, 14},
-            {22, 23, 24, 25},
-            {33, 34, 35, 36},
-            {44, 45, 46, 47}
-    };
-
     /**
      * This method helps to get the Points (x, y) and its corresponding adjuscent points
      *
-     * @return
+     * @return Map with key as points and values as its corresponding adjuscent points.
      */
     public Map<Point, List<Point>> getPoints() {
         Map<Point, List<Point>> pointsWithKey = new HashMap<>();
